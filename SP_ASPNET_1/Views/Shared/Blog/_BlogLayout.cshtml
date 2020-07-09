@@ -1,0 +1,58 @@
+﻿
+
+@using SP_ASPNET_1.Models
+@using SP_ASPNET_1.BusinessLogic
+@using SP_ASPNET_1.ViewModels
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="Blog">
+    <h1 class="text--white">@ViewBag.Title</h1>
+    <div class="Blog__Posts">
+        @RenderBody()
+        @{
+            //Html.RenderAction("LatestPost", "BlogPost");
+            Html.RenderPartial("~/Views/BlogPost/_BlogPostRecentPartialView.cshtml",
+                new BlogSinglePostViewModel() { Author = Model.BlogPost.Author, BlogPost = Model.BlogPost });
+        }
+    </div>
+</main>
+
+@section Scripts {
+    <script src="~/Scripts/axios.min.js"></script>
+    <script>
+
+        function Like(postID) {
+
+            let likeSpans = document.querySelectorAll(".likes");
+            let postLikesSpan = null;
+            for (let i = 0; i < likeSpans.length; i++) {
+                if (likeSpans[i].getAttribute("postID") == postID) {
+                    postLikesSpan = likeSpans[i];
+                    break;
+                }
+            }
+
+            axios({
+                method: 'post',
+                url: '/Blog/LikePost/'+postID,
+                headers: { 'content-type': 'application/json; charset=utf-8' },
+                data: ''
+            }).then(function (response) {
+                // handle success
+                if (response.data.ResultState == "Success") {
+                    postLikesSpan.innerText = `Likes : ${response.data.PostLikes}`;
+                }
+            }).catch(function (error) {
+                // handle error
+                alert(error);
+            }).then(function () {
+                // always executed
+            });
+
+        }
+
+    </script>
+}

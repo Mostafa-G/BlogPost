@@ -176,6 +176,15 @@ namespace SP_ASPNET_1.Controllers
         {
             try
             {
+                var postToDelete = this._blogPostOperations.GetBlogPostByIdD(id);
+                var _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+
+                if (!_userManager.IsInRole(User.Identity.GetUserId(), "Admin")
+                    && postToDelete.AuthorID != User.Identity.GetUserId())
+                {
+                    return Content(HttpStatusCode.Unauthorized.ToString(), "Unauthorized");
+                }
+
                 this._blogPostOperations.Delete(id);
 
                 return RedirectToAction("Index");

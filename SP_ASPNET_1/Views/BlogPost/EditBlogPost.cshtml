@@ -80,17 +80,15 @@
                 data: '{BlogPost: ' + JSON.stringify(BlogPost) + '}'
             }).then(function (response) {
                 // handle success
+                alert(response.data.ResultState);
                 if (response.data.ResultState == "Success") {
-                    alert("Success");
-                } else {
-                    alert("Fail");
+                    window.location.href = '/Blog/Detail/' + BlogPost.BlogPostID;
                 }
             }).catch(function (error) {
                 // handle error
                 alert(error);
             }).then(function () {
                 // always executed
-                window.location.href = '/Blog/Detail/' + BlogPost.BlogPostID;
             });
         }
     </script>

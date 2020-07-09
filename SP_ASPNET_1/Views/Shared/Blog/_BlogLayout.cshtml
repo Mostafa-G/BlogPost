@@ -42,7 +42,10 @@
                 data: ''
             }).then(function (response) {
                 // handle success
-                if (response.data.ResultState == "Success") {
+                if (typeof response.data == "string"
+                    && response.data.includes("/Account/Login?ReturnUrl")) {
+                    window.location.href = '/Account/Login?ReturnUrl=%2FBlog%2FDetail%2F' + postID;
+                }else if (response.data.ResultState == "Success") {
                     postLikesSpan.innerText = `Likes : ${response.data.PostLikes}`;
                 }
             }).catch(function (error) {

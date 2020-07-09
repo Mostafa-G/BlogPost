@@ -6,6 +6,9 @@ using System.Web.Routing;
 using SP_ASPNET_1.BusinessLogic;
 using System;
 using Microsoft.AspNet.Identity;
+using System.Net;
+using System.Web;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace SP_ASPNET_1.Controllers
 {
@@ -46,7 +49,6 @@ namespace SP_ASPNET_1.Controllers
             return View(modelView);
         }
 
-        [Authorize]
         [Route("Detail/Random")]
         [HttpGet]
         public ActionResult RandomPost()
@@ -119,6 +121,14 @@ namespace SP_ASPNET_1.Controllers
         public ActionResult EditBlogPost(int id)
         {
             BlogPost blogPost = this._blogPostOperations.GetBlogPostByIdD(id);
+            var _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+
+            if (!_userManager.IsInRole(User.Identity.GetUserId(), "Admin") 
+                && blogPost.AuthorID != User.Identity.GetUserId())
+            {
+                return Content(HttpStatusCode.Unauthorized.ToString(), "Unauthorized");
+            }
+
             if (blogPost == null)
             {
                 return HttpNotFound();
@@ -134,6 +144,14 @@ namespace SP_ASPNET_1.Controllers
             try
             {
                 var postToEdit = this._blogPostOperations.GetBlogPostByIdD(id);
+                var _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+
+                if (!_userManager.IsInRole(User.Identity.GetUserId(), "Admin")
+                    && postToEdit.AuthorID != User.Identity.GetUserId())
+                {
+                    return Json(new { ResultState = "Unauthorized", JsonRequestBehavior.AllowGet });
+                }
+
                 postToEdit.Content = blogPost.Content;
                 postToEdit.DateTime = blogPost.DateTime;
                 postToEdit.Title = blogPost.Title;

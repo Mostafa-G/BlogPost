@@ -28,7 +28,7 @@ namespace SP_ASPNET_1.Models
         // Relations
         [ForeignKey("AuthorID")]
         public ApplicationUser Author { get; set; }
-        public ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<ApplicationUser> Likers { get; set; }
     }
 }

@@ -1,11 +1,12 @@
 ﻿@using SP_ASPNET_1.BusinessLogic
+@using SP_ASPNET_1.Models
 @model SP_ASPNET_1.ViewModels.BlogSinglePostViewModel
 
 @{ Layout = "~/Views/Shared/Blog/_BlogLayout.cshtml"; }
 
 @if (Model != null)
 {
-    <div class="SinglePost">
+    <div class="SinglePost PostsContainer">
         <img src="@Html.AttributeEncode(Constants.POST_IMAGE_PREFIX + Model.BlogPost.ImageUrl)" alt="@Path.GetFileNameWithoutExtension(Model.BlogPost.ImageUrl)" />
         <h2>new chills for summer</h2>
         <p>By @Model.Author.ToString() on @Model.BlogPost.DateTime.ToString(Constants.DISPLAY_DATETIME_FORMAT)</p>
@@ -13,8 +14,28 @@
             @Model.BlogPost.Content
         </p>
         <div class="Posts__Item__Link">
-            <button onClick="Like(@Model.BlogPost.BlogPostID)" class="c-btn">Like</button>
-            <span class="likes" postID="@Model.BlogPost.BlogPostID">Likes : @Model.BlogPost.Likes</span>
+            <div class="form-group">
+                <button onClick="location.href='@Url.Action("SinglePost", new { id = Model.BlogPost.BlogPostID})'" class="c-btn">read more</button>
+                <button onClick="Like(@Model.BlogPost.BlogPostID)" class="c-btn">Like</button>
+                <span class="likes" postID="@Model.BlogPost.BlogPostID">Likes : @Model.BlogPost.Likes</span>
+            </div>
+            <div class="form-group">
+                <textarea class="form-control comment" postID="@Model.BlogPost.BlogPostID" rows="3" placeholder="Your comment here..."></textarea>
+            </div>
+            <div class="form-group">
+                <ul class="Comments__Featured">
+                    @foreach (Comment comment in Model.BlogPost.Comments)
+                    {
+                        <li class="Posts__Item">
+                            <div class="Comment-Preview__Content">
+                                <p>By @Model.BlogPost.Author</p>
+                                <p>@comment.Content</p>
+                            </div>
+                            <button postID="@comment.BlogPostID" commentID="@comment.CommentID" class="c-btn" name="removeComment">Remove</button>
+                        </li>
+                    }
+                </ul>
+            </div>
             <hr class="Post__Hr" />
         </div>
         <p>
@@ -25,7 +46,7 @@
     </div> }
 else
 {
-<div class="SinglePost">
-    <h2>There are no blog posts :-(</h2>
-</div>
+    <div class="SinglePost">
+        <h2>There are no blog posts :-(</h2>
+    </div>
 }

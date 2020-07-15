@@ -14,6 +14,10 @@
 .Posts__Item {
     display: flex;
     flex-flow: row nowrap;
+    background-color: lightgray;
+    margin-top: 10px;
+    padding: 7px;
+    border-radius: 5px;
 }
 .Posts__Item__Link{
     text-align: center;
@@ -73,4 +77,7 @@
     margin-right: 30px;
 }
 
+textarea {
+    resize: none;
+}
 

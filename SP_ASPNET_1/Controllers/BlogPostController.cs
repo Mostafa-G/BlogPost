@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using System.Net;
 using System.Web;
 using Microsoft.AspNet.Identity.Owin;
+using Newtonsoft.Json;
 
 namespace SP_ASPNET_1.Controllers
 {
@@ -72,13 +73,15 @@ namespace SP_ASPNET_1.Controllers
         [Authorize(Roles = "Admin, Author, User")]
         [Route("LikePost/{id:int}")]
         [HttpPost]
-        public ActionResult LikePost(int id)
+        public ActionResult LikeBlogPost(int id)
         {
-            BlogPost blogPost = this._blogPostOperations.LikePost(id, User.Identity.GetUserId());
-            if(blogPost == null)
+            BlogPost blogPost = this._blogPostOperations.GetBlogPostByIdD(id);
+            if (blogPost == null)
             {
                 return Json(new { PostLikes = -1, ResultState = "Fail", JsonRequestBehavior.AllowGet });
             }
+
+            blogPost = this._blogPostOperations.LikeBlogPost(id, User.Identity.GetUserId());
             return Json(new { PostLikes = blogPost.Likes, ResultState = "Success", JsonRequestBehavior.AllowGet });
         }
 
@@ -121,18 +124,18 @@ namespace SP_ASPNET_1.Controllers
         public ActionResult EditBlogPost(int id)
         {
             BlogPost blogPost = this._blogPostOperations.GetBlogPostByIdD(id);
-            var _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            if (blogPost == null)
+            {
+                return HttpNotFound();
+            }
 
+            var _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             if (!_userManager.IsInRole(User.Identity.GetUserId(), "Admin") 
                 && blogPost.AuthorID != User.Identity.GetUserId())
             {
                 return Content(HttpStatusCode.Unauthorized.ToString(), "Unauthorized");
             }
 
-            if (blogPost == null)
-            {
-                return HttpNotFound();
-            }
             return View(blogPost);
         }
 

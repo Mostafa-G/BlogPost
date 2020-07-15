@@ -24,6 +24,100 @@
     <script src="~/Scripts/axios.min.js"></script>
     <script>
 
+        document.querySelector(".PostsContainer").addEventListener('keypress', function (e) {
+
+            if (e.key === 'Enter'
+                && !e.shiftKey
+                && e.target.type === 'textarea'
+                && e.target.classList.contains("comment")) {
+
+                let postComments_ul = e.target.parentNode.parentNode.querySelector(".Comments__Featured");
+                let postID = e.target.getAttribute("postID");
+                var comment = {};
+                comment.Content = e.target.value;
+                comment.BlogPostID = postID;
+
+                axios({
+                    method: 'post',
+                    url: '/BlogPostComment/Create',
+                    headers: { 'content-type': 'application/json; charset=utf-8' },
+                    data: `{comment : ${JSON.stringify(comment)} }`
+                }).then(function (response) {
+                    // handle success
+                    if (typeof response.data == "string"
+                        && response.data.includes("/Account/Login?ReturnUrl")) {
+                        window.location.href = '/Account/Login?ReturnUrl=%2FBlog%2FDetail%2F' + postID;
+                    } else if (response.data.ResultState == "Success") {
+                        let responseComment = JSON.parse(response.data.Comment);
+
+                        let li = document.createElement('li');
+                        li.classList.add("Posts__Item");
+
+                        let pAuthor = document.createElement('p');
+                        pAuthor.innerText = `By ${responseComment.User}`;
+
+                        let pContent = document.createElement('p');
+                        pContent.innerText = responseComment.Content;
+
+                        let divContainer = document.createElement('div');
+                        divContainer.classList.add("Comment-Preview__Content");
+
+                        let btn = document.createElement('button');
+                        btn.classList.add("c-btn");
+                        btn.innerText = "Remove";
+                        btn.setAttribute("name", "removeComment");
+                        btn.setAttribute("postID", responseComment.BlogPostID);
+                        btn.setAttribute("commentID", responseComment.CommentID);
+
+                        divContainer.appendChild(pAuthor);
+                        divContainer.appendChild(pContent);
+                        li.appendChild(divContainer);
+                        li.appendChild(btn);
+
+                        postComments_ul.appendChild(li);
+
+                        e.target.value = "";
+                    }
+                }).catch(function (error) {
+                    // handle error
+                    alert(error);
+                }).then(function () {
+                    // always executed
+                });
+            }
+        });
+
+        document.querySelector(".PostsContainer").addEventListener('click', function (e) {
+
+            if (e.target.tagName === 'BUTTON'
+                && e.target.getAttribute("Name") === "removeComment") {
+                let postID = e.target.getAttribute("postID");
+                let commentID = e.target.getAttribute("commentID");
+
+                axios({
+                    method: 'delete',
+                    url: '/BlogPostComment/Delete/' + commentID,
+                    headers: { 'content-type': 'application/json; charset=utf-8' },
+                    data: ''
+                }).then(function (response) {
+                    // handle success
+                    if (typeof response.data == "string"
+                        && response.data.includes("/Account/Login?ReturnUrl")) {
+                        window.location.href = '/Account/Login?ReturnUrl=%2FBlog%2FDetail%2F' + postID;
+                    } else if (response.data.ResultState == "Success") {
+                        e.target.parentNode.parentNode.removeChild(e.target.parentNode);
+                    } else {
+                        alert(response.data.ResultState);
+                    }
+                }).catch(function (error) {
+                    // handle error
+                    alert(error);
+                }).then(function () {
+                    // always executed
+                });
+            }
+        });
+
         function Like(postID) {
 
             let likeSpans = document.querySelectorAll(".likes");

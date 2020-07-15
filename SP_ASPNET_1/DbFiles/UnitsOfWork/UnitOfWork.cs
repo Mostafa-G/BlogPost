@@ -12,6 +12,7 @@ namespace SP_ASPNET_1.DbFiles.UnitsOfWork
     public interface IUnitOfWork
     {
         IRepository<BlogPost> BlogPostSchoolRepository { get; }
+        IRepository<Comment> CommentSchoolRepository { get; }
         IRepository<ApplicationUser> UserSchoolRepository { get; }
         IRepository<ProductLine> ProductLineSchoolRepository { get; }
         IRepository<ProductItem> ProductItemSchoolRepository { get; }
@@ -22,6 +23,7 @@ namespace SP_ASPNET_1.DbFiles.UnitsOfWork
 
         private IRepository<ApplicationUser> _userSchoolRepository;
         private IRepository<BlogPost> _blogPostSchoolRepository;
+        private IRepository<Comment> _commentSchoolRepository;
         private IRepository<ProductLine> _productLineSchoolRepository;
         private IRepository<ProductItem> _productItemSchoolRepository;
 
@@ -34,6 +36,18 @@ namespace SP_ASPNET_1.DbFiles.UnitsOfWork
                     this._blogPostSchoolRepository = new BlogPostRepository(this._context);
                 }
                 return _blogPostSchoolRepository;
+            }
+        }
+
+        public IRepository<Comment> CommentSchoolRepository
+        {
+            get
+            {
+                if (this._commentSchoolRepository == null)
+                {
+                    this._commentSchoolRepository = new CommentRepository(this._context);
+                }
+                return _commentSchoolRepository;
             }
         }
 

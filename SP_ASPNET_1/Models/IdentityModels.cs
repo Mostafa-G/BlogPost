@@ -27,7 +27,7 @@ namespace SP_ASPNET_1.Models
 
         public string Name { get; set; }
         public string Surname { get; set; }
-        public int Likes { get { return BlogPosts.Sum(x => x.Likes); } }
+        public int Likes { get { return PublishedBlogPosts.Sum(x => x.Likes); } }
         public override string ToString()
         {
             return $"{Name} {Surname} ({Likes}♥)";
@@ -35,9 +35,7 @@ namespace SP_ASPNET_1.Models
 
         
         public virtual ICollection<BlogPost> LikedBlogPosts { get; set; }
-        [ForeignKey("UserID")]
-        public ICollection<BlogPost> BlogPosts { get; set; }
-        [ForeignKey("UserID")]
-        public ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<BlogPost> PublishedBlogPosts { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
     }
 }

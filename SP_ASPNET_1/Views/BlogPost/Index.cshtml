@@ -7,7 +7,7 @@
 
 @if (Model.BlogPosts != null)
 {
-    <ul class="Posts__Featured">
+    <ul class="PostsContainer">
         @foreach (BlogPost post in Model.BlogPosts)
         {
             <li class="Posts__Item">
@@ -20,9 +20,28 @@
                 </div>
             </li>
             <li class="Posts__Item__Link">
-                <button onClick="location.href='@Url.Action("SinglePost", new { id = @post.BlogPostID})'" class="c-btn">read more</button>
-                <button onClick="Like(@post.BlogPostID)" class="c-btn">Like</button>
-                <span class="likes" postID="@post.BlogPostID">Likes : @post.Likes</span>
+                <div class="form-group">
+                    <button onClick="location.href='@Url.Action("SinglePost", new { id = @post.BlogPostID})'" class="c-btn">read more</button>
+                    <button onClick="Like(@post.BlogPostID)" class="c-btn">Like</button>
+                    <span class="likes" postID="@post.BlogPostID">Likes : @post.Likes</span>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control comment" postID="@post.BlogPostID" rows="3" placeholder="Your comment here..."></textarea>
+                </div>
+                <div class="form-group">
+                    <ul class="Comments__Featured">
+                        @foreach (Comment comment in post.Comments)
+                        {
+                            <li class="Posts__Item">
+                                <div class="Comment-Preview__Content">
+                                    <p>By @post.Author</p>
+                                    <p>@comment.Content</p>
+                                </div>
+                                <button postID="@post.BlogPostID" commentID="@comment.CommentID" class="c-btn" name="removeComment">Remove</button>
+                            </li>
+                        }
+                    </ul>
+                </div>
                 <hr class="Post__Hr" />
             </li>
         }

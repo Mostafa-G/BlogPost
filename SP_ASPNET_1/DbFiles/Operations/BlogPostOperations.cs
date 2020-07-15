@@ -15,12 +15,16 @@ namespace SP_ASPNET_1.DbFiles.Operations
 {
     public class BlogPostOperations
     {
-        private UnitOfWork _unitOfWork = new UnitOfWork();
-        private List<BlogPost> _blogPosts;
+        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly List<BlogPost> _blogPosts;
 
         public BlogPostOperations()
         {
-            _blogPosts = _unitOfWork.BlogPostSchoolRepository.Get(null, b => b.OrderByDescending(d => d.DateTime), "Author").ToList();
+            _blogPosts = _unitOfWork.BlogPostSchoolRepository.Get(null, b => b.OrderByDescending(d => d.DateTime), "Author,Comments").ToList();
+            foreach(var blogPost in _blogPosts)
+            {
+                blogPost.Comments = blogPost.Comments.OrderBy(c => c.DateTime).ToList();
+            }
         }
 
         public async Task<BlogIndexViewModel> GetBlogIndexViewModelAsync()
@@ -34,7 +38,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
             };
         }
 
-        public BlogPost LikePost(int postID, string userID)
+        public BlogPost LikeBlogPost(int postID, string userID)
         {
             try
             {
@@ -71,7 +75,7 @@ namespace SP_ASPNET_1.DbFiles.Operations
             }
             return new BlogIndexViewModel()
             {
-                BlogPosts = _blogPosts.GetRange(1, _blogPosts.Count - 1),
+                BlogPosts = _blogPosts.GetRange(0, _blogPosts.Count),
                 BlogPost = _blogPosts.Take(1).FirstOrDefault()
             };
         }
@@ -148,7 +152,6 @@ namespace SP_ASPNET_1.DbFiles.Operations
                 Console.WriteLine(e);
                 throw;
             }
-
         }
     }
 }
